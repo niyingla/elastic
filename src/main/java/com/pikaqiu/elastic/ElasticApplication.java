@@ -14,7 +14,7 @@ public class ElasticApplication {
     }
 
     @GetMapping("/index")
-    public String index() {
+    public String index()  {
         return "index";
     }
 }
