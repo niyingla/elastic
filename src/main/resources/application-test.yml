@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: as1314520
+    jdbcUrl: jdbc:mysql://123.207.5.185:3306/xunwu?useUnicode=true&characterEncoding=utf8&useSSL=false
+
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+logging.level.org.hibernate.SQL: debug
+

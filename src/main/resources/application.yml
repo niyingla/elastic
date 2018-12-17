@@ -1,0 +1,32 @@
+spring:
+  redis:
+    host: 123.207.5.185
+    password: 123456
+    port: 6379
+    timeout: 20000
+    jedis:
+      pool:
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+  #关闭模板引擎缓存
+  thymeleaf:
+    cache: false
+    #模板模式
+    mode: HTML
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: as1314520
+    jdbcUrl: jdbc:mysql://123.207.5.185:3306/xunwu?useUnicode=true&characterEncoding=utf8&useSSL=false
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+logging.level.org.hibernate.SQL: debug
+qiniu.cdn.prefix: http://img3.imgtn.bdimg.com
+

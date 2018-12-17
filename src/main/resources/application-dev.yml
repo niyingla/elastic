@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: as1314520
+    jdbcUrl: jdbc:mysql://123.207.5.185:3306/xunwu?useUnicode=true&characterEncoding=utf8&useSSL=false
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+  servlet:
+    #设置文件上传配置
+    multipart:
+      max-file-size: 100MB
+      enabled: true
+      max-request-size: 12MB
+      #文件懒加载 需要的时候才解析 为true时进入请求就解析
+      resolve-lazily: false
+logging.level.org.hibernate.SQL: debug
+
