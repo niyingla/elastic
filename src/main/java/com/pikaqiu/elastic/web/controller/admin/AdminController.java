@@ -212,4 +212,30 @@ public class AdminController {
         }
         return "admin/house-edit";
     }
+    @PostMapping("admin/house/edit")
+    @ResponseBody
+    public ApiResponse editHouse(@Valid @ModelAttribute("form-house-edit") HouseForm houseForm, BindingResult bindingResult) {
+        //数据校验
+        if (bindingResult.hasErrors()) {
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), null);
+        }
+        //判断图片
+        if (CollectionUtils.isEmpty(houseForm.getPhotos()) || houseForm.getCover() == null) {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), "必须上传图片");
+        }
+        //判断地址
+        Map<SupportAddress.Level, SupportAddressDTO> cityAndRegion = addressService.findCityAndRegion(houseForm.getCityEnName(), houseForm.getRegionEnName());
+        if (cityAndRegion.size() != 2) {
+            return ApiResponse.ofStatus(ApiResponse.Status.NOT_VALID_PARAM);
+        }
+
+        //保存数据
+        ServiceResult<HouseDTO> result = houseService.update(houseForm);
+
+        if(result.isSuccess()){
+            return ApiResponse.ofSuccess(result.getMessage());
+        }
+
+        return  ApiResponse.ofSuccess(ApiResponse.Status.NOT_VALID_PARAM);
+    }
 }

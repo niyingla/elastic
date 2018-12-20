@@ -12,6 +12,7 @@ import com.pikaqiu.elastic.web.dto.HouseDetailDTO;
 import com.pikaqiu.elastic.web.dto.HousePictureDTO;
 import com.pikaqiu.elastic.web.dto.HouseSubscribeDTO;
 import com.pikaqiu.elastic.web.form.*;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -170,9 +172,48 @@ public class HouseServiceImpl implements IHouseService {
     }
 
 
+    /**
+     * 修改
+     * @param houseForm
+     * @return
+     */
     @Override
+    @Transactional
     public ServiceResult update(HouseForm houseForm) {
-        return null;
+        House house = houseRepository.findById(houseForm.getId()).get();
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+
+        //保存详情
+        HouseDetail houseDetail = houseDetailRepository.findByHouseId(house.getId());
+
+        if (houseDetail == null) {
+            return ServiceResult.notFound();
+        }
+
+        //封装houseForm中的参数到houseDetail
+        ServiceResult<HouseDTO> serviceResult = wrapperDetailInfo(houseDetail, houseForm);
+
+        if (serviceResult != null) {
+            return serviceResult;
+        }
+
+        houseDetailRepository.save(houseDetail);
+
+        List<HousePicture> housePictures = generatePictures(houseForm, houseForm.getId());
+
+        housePictureRepository.saveAll(housePictures);
+
+        if (StringUtils.isBlank(houseForm.getCover())) {
+            houseForm.setCover(house.getCover());
+        }
+
+        mapper.map(houseForm, house);
+
+        houseRepository.save(house);
+
+        return ServiceResult.success();
     }
 
     @Override
