@@ -176,6 +176,11 @@ public class AddressServiceImpl implements IAddressService {
         return ServiceResult.of(modelMapper.map(station, SubwayStationDTO.class));
     }
 
+    /**
+     * 根据城市英文名获取城市详细信息
+     * @param cityEnName
+     * @return
+     */
     @Override
     public ServiceResult<SupportAddressDTO> findCity(String cityEnName) {
         if (cityEnName == null) {

@@ -2,7 +2,9 @@ package com.pikaqiu.elastic.web.controller.house;
 
 import com.pikaqiu.elastic.base.ApiDataTableResponse;
 import com.pikaqiu.elastic.base.ApiResponse;
+import com.pikaqiu.elastic.base.RentValueBlock;
 import com.pikaqiu.elastic.service.ServiceMultiResult;
+import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IAddressService;
 import com.pikaqiu.elastic.service.house.IHouseService;
 import com.pikaqiu.elastic.web.dto.HouseDTO;
@@ -114,7 +116,20 @@ public class HouseController {
             }else {
                 rentSearch.setCityEnName(cityEnName);
             }
+        }else {
+            session.setAttribute("cityEnName", rentSearch.getCityEnName());
+
         }
+        //设置当前城市
+        ServiceResult<SupportAddressDTO> serviceCity = addressService.findCity(rentSearch.getCityEnName());
+
+        if (!serviceCity.isSuccess()) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        }
+        model.addAttribute("currentCity", serviceCity.getResult());
+
+        //
         ServiceMultiResult allRegionsByCityName = addressService.findAllRegionsByCityName(rentSearch.getCityEnName());
 
         if (allRegionsByCityName.getResult() == null || allRegionsByCityName.getTotal() < 1) {
@@ -128,14 +143,18 @@ public class HouseController {
 
         model.addAttribute("houses", new ArrayList<>());
 
-        if (rentSearch.getRegionEnName().equals("*")) {
+        if (rentSearch.getRegionEnName() == null) {
             rentSearch.setRegionEnName("*");
         }
 
         model.addAttribute("searchBody", rentSearch);
-
         model.addAttribute("regions", result.getResult());
+        model.addAttribute("priceBlocks", RentValueBlock.PRICE_BLOCK);
+        model.addAttribute("areaBlocks", RentValueBlock.AREA_BLOCK);
 
-        return "";
+        model.addAttribute("currentPriceBlock", RentValueBlock.matchPrice(rentSearch.getPriceBlock()));
+        model.addAttribute("currentAreaBlock", RentValueBlock.matchArea(rentSearch.getAreaBlock()));
+
+        return "rent-list";
     }
 }
