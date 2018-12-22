@@ -20,7 +20,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
@@ -73,7 +72,9 @@ public class SearchServiceImpl implements ISearchService {
 
     @Override
     public void index(Long houseId) {
+        //查库并封装数据到es对象
         House house = houseRepository.findById(houseId).get();
+
         if (house == null) {
             logger.error("house == null ");
             return;
@@ -91,14 +92,18 @@ public class SearchServiceImpl implements ISearchService {
 
         houseIndexTemplate.setTags(houseTagList.stream().map(HouseTag::getName).collect(Collectors.toList()));
 
+        //创建预查询json
         SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE).
                 setQuery(QueryBuilders.termQuery(HouseIndexKey.HOUSE_ID, houseId));
 
         logger.info(requestBuilder.toString());
 
+        //查询
         SearchResponse searchResponse = requestBuilder.get();
 
+        //获取命中数据 总条数
         long totalHits = searchResponse.getHits().getTotalHits();
+
         boolean success;
 
         if (totalHits == 0) {
