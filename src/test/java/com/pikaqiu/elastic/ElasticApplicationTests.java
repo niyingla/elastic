@@ -2,6 +2,8 @@ package com.pikaqiu.elastic;
 
 import com.pikaqiu.elastic.entity.User;
 import com.pikaqiu.elastic.repository.UserRepository;
+import com.pikaqiu.elastic.service.search.ISearchService;
+import org.elasticsearch.search.SearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,13 @@ public class ElasticApplicationTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ISearchService searchService;
+
     @Test
     public void contextLoads() {
 
-        Optional<User> byId = userRepository.findById(1l);
-
-        System.out.println(byId.get());
-
+        searchService.index(19L);
     }
 
 }
