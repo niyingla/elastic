@@ -306,6 +306,10 @@ public class HouseServiceImpl implements IHouseService {
 
     @Override
     public ServiceMultiResult<HouseDTO> query(RentSearch rentSearch) {
+
+        
+
+
         return null;
     }
 
