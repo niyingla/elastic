@@ -196,7 +196,17 @@ public class SearchServiceImpl implements ISearchService {
 
     @Override
     public void remove(Long houseId) {
+        DeleteByQueryRequestBuilder builder = DeleteByQueryAction.INSTANCE.newRequestBuilder(esClient)
+                .filter(QueryBuilders.termQuery("houseId", houseId)).source(INDEX_NAME);
+
+        logger.info("delete by query for house" + builder);
+
+        BulkByScrollResponse bulkByScrollResponse = builder.get();
+
+        long deleted = bulkByScrollResponse.getDeleted();
+
     }
+
 
     @Override
     public ServiceMultiResult<Long> query(RentSearch rentSearch) {

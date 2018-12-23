@@ -25,8 +25,10 @@ public class ElasticApplicationTests {
 
     @Test
     public void contextLoads() {
+//        searchService.index(19L);
 
-        searchService.index(19L);
+
+//        searchService.remove(19L);
     }
 
 }

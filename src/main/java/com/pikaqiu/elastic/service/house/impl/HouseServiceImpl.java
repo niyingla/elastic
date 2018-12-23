@@ -7,6 +7,7 @@ import com.pikaqiu.elastic.repository.*;
 import com.pikaqiu.elastic.service.ServiceMultiResult;
 import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IHouseService;
+import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.web.dto.HouseDTO;
 import com.pikaqiu.elastic.web.dto.HouseDetailDTO;
 import com.pikaqiu.elastic.web.dto.HousePictureDTO;
@@ -57,6 +58,9 @@ public class HouseServiceImpl implements IHouseService {
 
     @Autowired
     private SubwayRepository subwayRepository;
+
+    @Autowired
+    private ISearchService searchService;
 
     @Value("${qiniu.cdn.prefix}")
     private String cdnPrefix;
