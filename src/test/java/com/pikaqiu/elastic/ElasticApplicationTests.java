@@ -45,7 +45,7 @@ public class ElasticApplicationTests {
         rentSearch.setStart(0);
         rentSearch.setSize(10);
         rentSearch.setKeywords("时尚");
-        rentSearch.setPriceBlock("1000-3000");
+        rentSearch.setPriceBlock("3000-*");
         rentSearch.setOrderBy(HouseIndexKey.CREATE_TIME);
         searchService.query(rentSearch);
         ServiceMultiResult<Long> query = searchService.query(rentSearch);
