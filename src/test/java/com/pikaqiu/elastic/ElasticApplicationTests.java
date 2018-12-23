@@ -27,7 +27,7 @@ public class ElasticApplicationTests {
 
     @Test
     public void contextLoads() {
-/*        for (long i =15L; i < 27l; i++) {
+       /* for (long i =15L; i < 27l; i++) {
             searchService.index(i,1);
         }*/
 
@@ -44,7 +44,7 @@ public class ElasticApplicationTests {
         rentSearch.setRegionEnName("*");
         rentSearch.setStart(0);
         rentSearch.setSize(10);
-        rentSearch.setKeywords("湖光壹号");
+        rentSearch.setKeywords("时尚");
         rentSearch.setPriceBlock("1000-3000");
         rentSearch.setOrderBy(HouseIndexKey.CREATE_TIME);
         searchService.query(rentSearch);

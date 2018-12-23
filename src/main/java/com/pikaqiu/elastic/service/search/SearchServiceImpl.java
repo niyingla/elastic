@@ -361,7 +361,8 @@ public class SearchServiceImpl implements ISearchService {
         }
 
         //关键词多字段匹配
-        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(), HouseIndexKey.TITLE,
+        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
+                HouseIndexKey.TITLE,
                 HouseIndexKey.TRAFFIC,
                 HouseIndexKey.DISTRICT,
                 HouseIndexKey.ROUND_SERVICE,
@@ -411,6 +412,8 @@ public class SearchServiceImpl implements ISearchService {
             }
             boolQueryBuilder.filter(rangeQueryBuilder);
         }
+
+
 
         SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE).setQuery(boolQueryBuilder).
                 addSort(HouseSort.getSortKey(rentSearch.getOrderBy()), SortOrder.fromString(rentSearch.getOrderDirection()))
