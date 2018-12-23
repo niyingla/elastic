@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.primitives.Longs;
 import com.pikaqiu.elastic.base.HouseSort;
+import com.pikaqiu.elastic.base.RentValueBlock;
 import com.pikaqiu.elastic.entity.House;
 import com.pikaqiu.elastic.entity.HouseDetail;
 import com.pikaqiu.elastic.entity.HouseTag;
@@ -24,6 +25,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
@@ -351,10 +353,63 @@ public class SearchServiceImpl implements ISearchService {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
+        //所在城市
         boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.CITY_EN_NAME, rentSearch.getCityEnName()));
 
         if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())) {
             boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
+        }
+
+        //关键词多字段匹配
+        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(), HouseIndexKey.TITLE,
+                HouseIndexKey.TRAFFIC,
+                HouseIndexKey.DISTRICT,
+                HouseIndexKey.ROUND_SERVICE,
+                HouseIndexKey.SUBWAY_LINE_NAME,
+                HouseIndexKey.SUBWAY_STATION_NAME));
+
+
+        RentValueBlock rentValueBlock = RentValueBlock.matchArea(rentSearch.getAreaBlock());
+
+        if (!RentValueBlock.ALL.equals(rentValueBlock)) {
+            //范围查询
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(HouseIndexKey.AREA);
+            if (rentValueBlock.getMin() > 0) {
+                //最小
+                rangeQueryBuilder.gte(rentValueBlock.getMin());
+            }
+            if (rentValueBlock.getMax() > 0) {
+                //最小
+                rangeQueryBuilder.lte(rentValueBlock.getMax());
+            }
+            boolQueryBuilder.filter(rangeQueryBuilder);
+        }
+
+        //具体朝向
+        if (rentSearch.getDirection() > 0) {
+            boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.DIRECTION, rentSearch.getDirection()));
+        }
+
+        //租房方式 整租 | 合租
+        if (rentSearch.getRentWay() > 0) {
+            boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.RENT_WAY, rentSearch.getRentWay()));
+        }
+
+        RentValueBlock matchPrice = RentValueBlock.matchPrice(rentSearch.getPriceBlock());
+
+        if (!RentValueBlock.ALL.equals(matchPrice)) {
+            //范围查询
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(HouseIndexKey.PRICE);
+
+            if (matchPrice.getMin() > 0) {
+                //最小
+                rangeQueryBuilder.gte(matchPrice.getMin());
+            }
+            if (matchPrice.getMax() > 0) {
+                //最小
+                rangeQueryBuilder.lte(matchPrice.getMax());
+            }
+            boolQueryBuilder.filter(rangeQueryBuilder);
         }
 
         SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE).setQuery(boolQueryBuilder).
@@ -374,7 +429,7 @@ public class SearchServiceImpl implements ISearchService {
 
         Iterator<SearchHit> iterator = searchResponse.getHits().iterator();
 
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             SearchHit searchHit = iterator.next();
             houseIds.add(Longs.tryParse(String.valueOf(searchHit.getSource().get(HouseIndexKey.HOUSE_ID))));
 

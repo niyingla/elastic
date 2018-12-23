@@ -2,6 +2,7 @@ package com.pikaqiu.elastic;
 
 import com.pikaqiu.elastic.entity.User;
 import com.pikaqiu.elastic.repository.UserRepository;
+import com.pikaqiu.elastic.service.ServiceMultiResult;
 import com.pikaqiu.elastic.service.search.HouseIndexKey;
 import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.service.search.SearchServiceImpl;
@@ -26,18 +27,28 @@ public class ElasticApplicationTests {
 
     @Test
     public void contextLoads() {
-//        searchService.index(19L,3);
+/*        for (long i =15L; i < 27l; i++) {
+            searchService.index(i,1);
+        }*/
 
+        testSearch();
 
 //        searchService.remove(19L);
 
+
+    }
+
+    private void testSearch(){
         RentSearch rentSearch = new RentSearch();
         rentSearch.setCityEnName("bj");
         rentSearch.setRegionEnName("*");
         rentSearch.setStart(0);
         rentSearch.setSize(10);
+        rentSearch.setKeywords("湖光壹号");
+        rentSearch.setPriceBlock("1000-3000");
         rentSearch.setOrderBy(HouseIndexKey.CREATE_TIME);
         searchService.query(rentSearch);
+        ServiceMultiResult<Long> query = searchService.query(rentSearch);
+        System.out.println(query.getResult());
     }
-
 }
