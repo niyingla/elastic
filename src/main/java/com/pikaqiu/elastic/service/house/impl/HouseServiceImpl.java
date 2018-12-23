@@ -79,7 +79,7 @@ public class HouseServiceImpl implements IHouseService {
         mapper.map(houseForm, house);
         Date now = new Date();
         house.setCreateTime(now);
-        house.setCreateTime(now);
+        house.setLastUpdateTime(now);
         house.setAdminId(LoginUserUtil.getUserId());
         houseRepository.save(house);
         houseDetail.setHouseId(house.getId());
@@ -162,7 +162,7 @@ public class HouseServiceImpl implements IHouseService {
         }
         //查看地铁站是否存在
         SubwayStation subwayStation = subwayStationRepository.findById(houseForm.getSubwayStationId()).get();
-        if (subwayStation == null || subway.getId().equals(subwayStation.getSubwayId())) {
+        if (subwayStation == null || !subway.getId().equals(subwayStation.getSubwayId())) {
             return new ServiceResult<>(false, "Not valid subway station!");
         }
 
@@ -223,6 +223,10 @@ public class HouseServiceImpl implements IHouseService {
 
         houseRepository.save(house);
 
+        //保存到es
+        if (house.getStatus() == HouseStatus.PASSES.getValue()) {
+            searchService.index(house.getId());
+        }
 
         return ServiceResult.success();
     }

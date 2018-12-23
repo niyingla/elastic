@@ -3,6 +3,7 @@ package com.pikaqiu.elastic;
 import com.pikaqiu.elastic.entity.User;
 import com.pikaqiu.elastic.repository.UserRepository;
 import com.pikaqiu.elastic.service.search.ISearchService;
+import com.pikaqiu.elastic.service.search.SearchServiceImpl;
 import org.elasticsearch.search.SearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,14 +19,11 @@ import java.util.Optional;
 public class ElasticApplicationTests {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ISearchService searchService;
+    private SearchServiceImpl searchService;
 
     @Test
     public void contextLoads() {
-//        searchService.index(19L);
+        searchService.index(19L,3);
 
 
 //        searchService.remove(19L);
