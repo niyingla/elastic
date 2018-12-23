@@ -8,6 +8,7 @@ import com.pikaqiu.elastic.repository.*;
 import com.pikaqiu.elastic.service.ServiceMultiResult;
 import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IHouseService;
+import com.pikaqiu.elastic.service.search.HouseIndexKey;
 import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.web.dto.HouseDTO;
 import com.pikaqiu.elastic.web.dto.HouseDetailDTO;
@@ -15,6 +16,9 @@ import com.pikaqiu.elastic.web.dto.HousePictureDTO;
 import com.pikaqiu.elastic.web.dto.HouseSubscribeDTO;
 import com.pikaqiu.elastic.web.form.*;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -347,6 +351,7 @@ public class HouseServiceImpl implements IHouseService {
 
     @Override
     public ServiceMultiResult<HouseDTO> query(RentSearch rentSearch) {
+
 
 
         return new ServiceMultiResult(0, new ArrayList<>());

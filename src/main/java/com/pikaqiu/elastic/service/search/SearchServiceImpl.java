@@ -2,6 +2,8 @@ package com.pikaqiu.elastic.service.search;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.primitives.Longs;
+import com.pikaqiu.elastic.base.HouseSort;
 import com.pikaqiu.elastic.entity.House;
 import com.pikaqiu.elastic.entity.HouseDetail;
 import com.pikaqiu.elastic.entity.HouseTag;
@@ -20,11 +22,14 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +39,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -341,7 +348,38 @@ public class SearchServiceImpl implements ISearchService {
 
     @Override
     public ServiceMultiResult<Long> query(RentSearch rentSearch) {
-        return null;
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.CITY_EN_NAME, rentSearch.getCityEnName()));
+
+        if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())) {
+            boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
+        }
+
+        SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE).setQuery(boolQueryBuilder).
+                addSort(HouseSort.getSortKey(rentSearch.getOrderBy()), SortOrder.fromString(rentSearch.getOrderDirection()))
+                .setFrom(rentSearch.getStart()).setSize(rentSearch.getSize());
+
+        logger.info(requestBuilder.toString());
+
+        List<Long> houseIds = new ArrayList<>();
+
+        SearchResponse searchResponse = requestBuilder.get();
+
+        if (searchResponse.status() != RestStatus.OK) {
+            logger.error("查询失败");
+            return new ServiceMultiResult<>(0, houseIds);
+        }
+
+        Iterator<SearchHit> iterator = searchResponse.getHits().iterator();
+
+        while (iterator.hasNext()){
+            SearchHit searchHit = iterator.next();
+            houseIds.add(Longs.tryParse(String.valueOf(searchHit.getSource().get(HouseIndexKey.HOUSE_ID))));
+
+        }
+        return new ServiceMultiResult<>(searchResponse.getHits().totalHits, houseIds);
     }
 
     @Override

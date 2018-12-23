@@ -2,8 +2,10 @@ package com.pikaqiu.elastic;
 
 import com.pikaqiu.elastic.entity.User;
 import com.pikaqiu.elastic.repository.UserRepository;
+import com.pikaqiu.elastic.service.search.HouseIndexKey;
 import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.service.search.SearchServiceImpl;
+import com.pikaqiu.elastic.web.form.RentSearch;
 import org.elasticsearch.search.SearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +23,21 @@ public class ElasticApplicationTests {
     @Autowired
     private SearchServiceImpl searchService;
 
+
     @Test
     public void contextLoads() {
-        searchService.index(19L,3);
+//        searchService.index(19L,3);
 
 
 //        searchService.remove(19L);
+
+        RentSearch rentSearch = new RentSearch();
+        rentSearch.setCityEnName("bj");
+        rentSearch.setRegionEnName("*");
+        rentSearch.setStart(0);
+        rentSearch.setSize(10);
+        rentSearch.setOrderBy(HouseIndexKey.CREATE_TIME);
+        searchService.query(rentSearch);
     }
 
 }
