@@ -1,5 +1,6 @@
 package com.pikaqiu.elastic.service.house.impl;
 
+import com.pikaqiu.elastic.base.HouseStatus;
 import com.pikaqiu.elastic.base.HouseSubscribeStatus;
 import com.pikaqiu.elastic.base.LoginUserUtil;
 import com.pikaqiu.elastic.entity.*;
@@ -111,6 +112,11 @@ public class HouseServiceImpl implements IHouseService {
             houseDTO.setTags(tags);
         }
 
+        //保存到es
+        if (house.getStatus() == HouseStatus.PASSES.getValue()) {
+            searchService.index(house.getId());
+        }
+
         return new ServiceResult<>(true, null, houseDTO);
 
     }
@@ -217,6 +223,7 @@ public class HouseServiceImpl implements IHouseService {
 
         houseRepository.save(house);
 
+
         return ServiceResult.success();
     }
 
@@ -305,7 +312,33 @@ public class HouseServiceImpl implements IHouseService {
 
     @Override
     public ServiceResult updateStatus(Long id, int status) {
-        return null;
+        House house = houseRepository.findById(id).get();
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+
+        if (house.getStatus() == status) {
+            return new ServiceResult(false, "状态没有发生变化");
+        }
+
+        if (house.getStatus() == HouseStatus.RENTED.getValue()) {
+            return new ServiceResult(false, "已出租的房源不允许修改状态");
+        }
+
+        if (house.getStatus() == HouseStatus.DELETED.getValue()) {
+            return new ServiceResult(false, "已删除的资源不允许操作");
+        }
+
+        houseRepository.updateStatus(id, status);
+
+        // 上架更新索引 其他情况都要删除索引
+        if (status == HouseStatus.PASSES.getValue()) {
+            searchService.index(id);
+        } else {
+            searchService.remove(id);
+        }
+
+        return ServiceResult.success();
     }
 
     @Override

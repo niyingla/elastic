@@ -1,4 +1,8 @@
 spring:
+  kafka:
+    bootstrap-servers: 192.168.159.128:9092
+    consumer.group-id: xunwu
+
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
