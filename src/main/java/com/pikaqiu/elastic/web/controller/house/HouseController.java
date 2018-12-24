@@ -1,19 +1,19 @@
 package com.pikaqiu.elastic.web.controller.house;
 
-import com.pikaqiu.elastic.base.ApiDataTableResponse;
 import com.pikaqiu.elastic.base.ApiResponse;
 import com.pikaqiu.elastic.base.RentValueBlock;
 import com.pikaqiu.elastic.service.ServiceMultiResult;
 import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IAddressService;
 import com.pikaqiu.elastic.service.house.IHouseService;
+import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.web.dto.HouseDTO;
 import com.pikaqiu.elastic.web.dto.SubwayDTO;
 import com.pikaqiu.elastic.web.dto.SubwayStationDTO;
 import com.pikaqiu.elastic.web.dto.SupportAddressDTO;
-import com.pikaqiu.elastic.web.form.DatatableSearch;
 import com.pikaqiu.elastic.web.form.RentSearch;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +38,22 @@ public class HouseController {
 
     @Autowired
     private IHouseService houseService;
+
+    @Autowired
+    private ISearchService searchService;
+    /**
+     * 自动补全接口
+     */
+    @GetMapping("rent/house/autocomplete")
+    @ResponseBody
+    public ApiResponse autocomplete(@RequestParam(value = "prefix") String prefix) {
+
+        if (prefix.isEmpty()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+        ServiceResult<List<String>> result = this.searchService.suggest(prefix);
+        return ApiResponse.ofSuccess(result.getResult());
+    }
 
     /**
      * 获取支持城市列表
