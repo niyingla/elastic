@@ -20,14 +20,15 @@ public class ElasticApplicationTests {
 
     @Test
     public void contextLoads() {
-        System.out.println(searchService.suggest("融泽嘉园").getResult());
-
+        //测试关键建议
+        System.out.println(searchService.suggest("融泽").getResult());
+        //测试循环更新
 /*        for (long i =15L; i < 27l; i++) {
             searchService.index(i,1);
         }*/
-
+//测试搜索
 //        testSearch();
-
+//测试删除
 //        searchService.remove(19L);
 
 
