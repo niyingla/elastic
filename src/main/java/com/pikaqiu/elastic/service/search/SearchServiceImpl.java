@@ -18,6 +18,7 @@ import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IAddressService;
 import com.pikaqiu.elastic.web.form.MapSearch;
 import com.pikaqiu.elastic.web.form.RentSearch;
+import org.apache.lucene.index.Term;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
@@ -33,8 +34,13 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
+import org.elasticsearch.join.aggregations.JoinAggregationBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
@@ -187,6 +193,7 @@ public class SearchServiceImpl implements ISearchService {
 
     /**
      * 设置suggest
+     *
      * @param indexTemplate
      * @return
      */
@@ -551,9 +558,39 @@ public class SearchServiceImpl implements ISearchService {
         return ServiceResult.of(suggests);
     }
 
+    /**
+     * 根据城市地区小区名计算房源数量
+     *
+     * @param cityEnName
+     * @param regionEnName
+     * @param district
+     * @return
+     */
     @Override
     public ServiceResult<Long> aggregateDistrictHouse(String cityEnName, String regionEnName, String district) {
-        return null;
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.CITY_EN_NAME, cityEnName));
+        boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, regionEnName));
+        boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.DISTRICT, district));
+        SearchRequestBuilder searchRequestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE)
+                //设置查寻条件                    设置合计                                        聚合取个名字
+                .setQuery(boolQueryBuilder).addAggregation(AggregationBuilders.terms(HouseIndexKey.AGG_DISTRICT)
+                        //聚合字段                          查询size0 因为不查数据
+                        .field(HouseIndexKey.DISTRICT)).setSize(0);
+        logger.info(boolQueryBuilder.toString());
+        SearchResponse searchResponse = searchRequestBuilder.get();
+        if (searchResponse.status() == RestStatus.OK) {
+            //                              获取聚合数据集合              获取对应名字的数据
+            Terms terms = searchResponse.getAggregations().get(HouseIndexKey.AGG_DISTRICT);
+
+            if (terms.getBuckets() != null && !terms.getBuckets().isEmpty()) {
+                //根据聚合结果获取聚合字段对应的聚合的值（也就是当前小区名）的 聚合数量
+                return ServiceResult.of(terms.getBucketByKey(district).getDocCount());
+            }
+        }
+        logger.error("数据为null");
+        return ServiceResult.of(0L);
+
     }
 
     @Override
