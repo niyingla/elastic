@@ -584,7 +584,7 @@ public class SearchServiceImpl implements ISearchService {
             Terms terms = searchResponse.getAggregations().get(HouseIndexKey.AGG_DISTRICT);
 
             if (terms.getBuckets() != null && !terms.getBuckets().isEmpty()) {
-                //根据聚合结果获取聚合字段对应的聚合的值（也就是当前小区名）的 聚合数量
+                //根据聚合结果获取聚合字段(小区)对应的聚合的值（也就是当前小区名）的 聚合数量
                 return ServiceResult.of(terms.getBucketByKey(district).getDocCount());
             }
         }

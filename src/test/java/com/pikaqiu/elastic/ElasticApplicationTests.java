@@ -20,8 +20,10 @@ public class ElasticApplicationTests {
 
     @Test
     public void contextLoads() {
+        long l = System.currentTimeMillis();
         //查询统计
         searchService.aggregateDistrictHouse("bj", "hdq", "融泽嘉园");
+
         //测试关键建议
 //        System.out.println(searchService.suggest("融泽").getResult());
         //测试循环更新
@@ -33,6 +35,9 @@ public class ElasticApplicationTests {
 //测试删除
 //        searchService.remove(19L);
 
+        long l2 = System.currentTimeMillis();
+
+        System.out.println(l2 - l);
 
     }
 
