@@ -433,7 +433,7 @@ public class SearchServiceImpl implements ISearchService {
         if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())) {
             boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
         }
-        //must必须 没有就不出来 默认是 1分 这里为了优先级 设置权重两份
+        //must必须 没有就不出来 默认是 1分 这里为了优先级 设置权重2分
         boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(), HouseIndexKey.TITLE).boost(2));
         //关键词多字段匹配 should 可以 没有就靠后
         boolQueryBuilder.should(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
