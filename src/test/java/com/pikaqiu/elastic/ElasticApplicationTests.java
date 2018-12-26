@@ -38,7 +38,7 @@ public class ElasticApplicationTests {
 
         long l2 = System.currentTimeMillis();
 
-        System.out.println(l2 - l + "查询时间");
+        System.out.println(l2 - l + "  查询时间");
 
     }
 
