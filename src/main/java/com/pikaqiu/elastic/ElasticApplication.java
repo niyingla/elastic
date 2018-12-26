@@ -12,9 +12,4 @@ public class ElasticApplication {
     public static void main(String[] args) {
         SpringApplication.run(ElasticApplication.class, args);
     }
-
-    @GetMapping("/index")
-    public String index()  {
-        return "index";
-    }
 }
