@@ -60,7 +60,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by 瓦力.
+ * Created by xiaoye.
  * matchQuery： 会将搜索词分词，再与目标查询字段进行匹配，若分词中的任意一个词与目标字段匹配上，则可查询到。
  * termQuery：不会对搜索词进行分词处理，而是作为一个整体与目标字段进行匹配，若完全匹配，则可查询到。
  * 如果你的查询是范围和类型比较粗大的，用filter 
