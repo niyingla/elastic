@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  * termQuery：不会对搜索词进行分词处理，而是作为一个整体与目标字段进行匹配，若完全匹配，则可查询到。
  * 如果你的查询是范围和类型比较粗大的，用filter 
  * 如果是那种精准的，就用query来查询。 
- * should ，must_not, must, query 四种直接查询类型 
+ * should ,must_not, must, query 四种直接查询类型 
  */
 @Service
 public class SearchServiceImpl implements ISearchService {
