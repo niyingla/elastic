@@ -197,7 +197,7 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     /**
-     * 设置suggest  搜词记忆
+     * 设置suggest  搜词建议   比如搜小区 前两个字  给出五组建议搜词
      *
      * @param indexTemplate
      * @return
@@ -230,7 +230,8 @@ public class SearchServiceImpl implements ISearchService {
             }
 
             HouseSuggest suggest = new HouseSuggest();
-            //设置权重
+            //默认设置了 10 的权重
+            //设置分词后的内容
             suggest.setInput(token.getTerm());
             suggests.add(suggest);
         }
@@ -511,6 +512,10 @@ public class SearchServiceImpl implements ISearchService {
         return new ServiceMultiResult<>(searchResponse.getHits().totalHits, houseIds);
     }
 
+   /**
+    *  搜词建议   比如搜小区 前两个字  给出五组建议搜词
+    */
+    
     @Override
     public ServiceResult<List<String>> suggest(String prefix) {
         //创建指定字段的suggestBuider prefix是前缀 响应个数是五
