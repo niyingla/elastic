@@ -103,11 +103,16 @@ public class SearchServiceImpl implements ISearchService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    /**
+    *
+    * 监听的队列的名字
+    */
     @KafkaListener(topics = INDEX_TOPIC)
     private void handleMessage(String content) {
         try {
+            //转换json到对象类
             HouseIndexMessage houseIndexMessage = objectMapper.readValue(content, HouseIndexMessage.class);
-
+            //根据对应类型进行es操作
             switch (houseIndexMessage.getOperation()) {
                 case HouseIndexMessage.INDEX:
                     this.createOrUpdateIndex(houseIndexMessage);
