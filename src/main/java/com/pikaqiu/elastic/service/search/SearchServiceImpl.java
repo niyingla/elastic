@@ -433,10 +433,10 @@ public class SearchServiceImpl implements ISearchService {
         if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())) {
             boolQueryBuilder.filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
         }
-
-        //关键词多字段匹配
-        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
-                HouseIndexKey.TITLE,
+        //must必须 没有就不出来 默认是 1分 这里为了优先级 设置权重两份
+        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(), HouseIndexKey.TITLE).boost(2));
+        //关键词多字段匹配 should 可以 没有就靠后
+        boolQueryBuilder.should(QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
                 HouseIndexKey.TRAFFIC,
                 HouseIndexKey.DISTRICT,
                 HouseIndexKey.ROUND_SERVICE,
@@ -490,7 +490,8 @@ public class SearchServiceImpl implements ISearchService {
 
         SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE).setQuery(boolQueryBuilder).
                 addSort(HouseSort.getSortKey(rentSearch.getOrderBy()), SortOrder.fromString(rentSearch.getOrderDirection()))
-                .setFrom(rentSearch.getStart()).setSize(rentSearch.getSize());
+                //                                                                          只返回房子Id
+                .setFrom(rentSearch.getStart()).setSize(rentSearch.getSize());//.setFetchSource(HouseIndexKey.HOUSE_ID, null);
 
         logger.info(requestBuilder.toString());
 
