@@ -6,6 +6,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,6 +18,7 @@ import java.net.UnknownHostException;
  * @create: 2018-12-22 21:56
  **/
 @Configuration
+@EnableAsync
 public class ElasticSearchConfig {
 
     @Bean

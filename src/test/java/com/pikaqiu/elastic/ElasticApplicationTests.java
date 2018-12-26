@@ -22,7 +22,7 @@ public class ElasticApplicationTests {
     public void contextLoads() {
         long l = System.currentTimeMillis();
         //查询统计
-        searchService.aggregateDistrictHouse("bj", "hdq", "融泽嘉园");
+//        searchService.aggregateDistrictHouse("bj", "hdq", "融泽嘉园");
 
         //测试关键建议
 //        System.out.println(searchService.suggest("融泽").getResult());
@@ -34,6 +34,7 @@ public class ElasticApplicationTests {
 //        testSearch();
 //测试删除
 //        searchService.remove(19L);
+        testSearch();
 
         long l2 = System.currentTimeMillis();
 
@@ -41,7 +42,7 @@ public class ElasticApplicationTests {
 
     }
 
-    private void testSearch() {
+    public void testSearch() {
         RentSearch rentSearch = new RentSearch();
         rentSearch.setCityEnName("bj");
         rentSearch.setRegionEnName("*");

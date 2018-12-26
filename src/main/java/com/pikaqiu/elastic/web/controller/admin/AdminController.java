@@ -3,16 +3,19 @@ package com.pikaqiu.elastic.web.controller.admin;
 import com.pikaqiu.elastic.base.ApiDataTableResponse;
 import com.pikaqiu.elastic.base.ApiResponse;
 import com.pikaqiu.elastic.entity.SupportAddress;
+import com.pikaqiu.elastic.service.IUserService;
 import com.pikaqiu.elastic.service.ServiceMultiResult;
 import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IAddressService;
 import com.pikaqiu.elastic.service.house.IHouseService;
 import com.pikaqiu.elastic.service.house.impl.AddressServiceImpl;
+import com.pikaqiu.elastic.service.search.ISearchService;
 import com.pikaqiu.elastic.web.dto.*;
 import com.pikaqiu.elastic.web.form.DatatableSearch;
 import com.pikaqiu.elastic.web.form.HouseForm;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
+import org.elasticsearch.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * @program: elastic
@@ -44,7 +49,8 @@ public class AdminController {
 
     @Autowired
     private IHouseService houseService;
-
+    @Autowired
+    private IUserService userService;
 
     /**
      * 后台管理中心
@@ -237,5 +243,19 @@ public class AdminController {
         }
 
         return  ApiResponse.ofSuccess(ApiResponse.Status.NOT_VALID_PARAM);
+    }
+
+    @GetMapping("testAsync")
+    @ResponseBody
+    public String testAsync(){
+        Future<String> stringFuture = userService.testAsync();
+        try {
+            System.out.println(stringFuture.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return "1111";
     }
 }

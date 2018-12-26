@@ -60,4 +60,5 @@ public interface ISearchService {
      * @return
      */
     ServiceMultiResult<Long> mapQuery(MapSearch mapSearch);
+
 }

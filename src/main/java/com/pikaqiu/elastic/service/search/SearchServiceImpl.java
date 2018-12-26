@@ -18,7 +18,6 @@ import com.pikaqiu.elastic.service.ServiceResult;
 import com.pikaqiu.elastic.service.house.IAddressService;
 import com.pikaqiu.elastic.web.form.MapSearch;
 import com.pikaqiu.elastic.web.form.RentSearch;
-import org.apache.lucene.index.Term;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
@@ -34,11 +33,8 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
-import org.elasticsearch.join.aggregations.JoinAggregationBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortOrder;
@@ -622,6 +618,5 @@ public class SearchServiceImpl implements ISearchService {
     public ServiceMultiResult<Long> mapQuery(MapSearch mapSearch) {
         return null;
     }
-
 
 }

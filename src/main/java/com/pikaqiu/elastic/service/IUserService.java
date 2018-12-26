@@ -2,6 +2,8 @@ package com.pikaqiu.elastic.service;
 
 import com.pikaqiu.elastic.entity.User;
 
+import java.util.concurrent.Future;
+
 /**
  * @program: elastic
  * @description:
@@ -16,4 +18,11 @@ public interface IUserService {
      * @return
      */
     User findUserByName(String userName);
+
+
+    /**
+     * 异步测试类
+     * @return
+     */
+    Future<String> testAsync();
 }

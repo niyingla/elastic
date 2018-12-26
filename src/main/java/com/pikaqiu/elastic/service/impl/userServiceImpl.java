@@ -5,19 +5,19 @@ import com.pikaqiu.elastic.entity.User;
 import com.pikaqiu.elastic.repository.RoleRepository;
 import com.pikaqiu.elastic.repository.UserRepository;
 import com.pikaqiu.elastic.service.IUserService;
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @program: elastic
@@ -64,4 +64,17 @@ public class userServiceImpl implements IUserService {
 
         return user;
     }
+
+
+    @Override
+    @Async
+    public Future<String> testAsync() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new AsyncResult<String>("hello world !!!!");
+    }
+
 }
