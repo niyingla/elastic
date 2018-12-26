@@ -1,17 +1,18 @@
 {
   "settings": {
-    "number_of_replicas": 0,
-    "number_of_shards": 5,
-    "index.store.type": "niofs",
-    "index.query.default_field": "title",
-    "index.unassigned.node_left.delayed_timeout": "5m"
+    "number_of_replicas": 0,//没有备份 //默认1
+    "number_of_shards": 5, //分片数 默认5 分片大小 控制 10-30g之间
+    "index.store.type": "niofs", //索引存储类型 nio file system
+    "index.query.default_field": "title", //默认查询字段
+    "index.unassigned.node_left.delayed_timeout": "5m" //节点掉线延迟5分钟 恢复备份
+    //（集群比较大时 恢复会造成集群不稳定 网络恢复后也可能出问题）
   },
 
 
   "mappings": {
     "house": {
-      "dynamic": "strict",
-      "_all": {
+      "dynamic": "strict", //默认 true  数据模板结构 动态更新
+      "_all": { //全字段索引  6.0后消失 建议设置false
         "enabled": false
       },
       "properties": {
@@ -81,7 +82,7 @@
           "type": "text",
           "index": "analyzed",
           "analyzer": "ik_smart",
-          "search_analyzer": "ik_smart"
+          "search_analyzer": "ik_smart"//小分词 分的比较细
         },
         "roundService": {
           "type": "text",
