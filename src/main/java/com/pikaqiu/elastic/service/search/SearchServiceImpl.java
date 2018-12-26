@@ -197,7 +197,7 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     /**
-     * 设置suggest
+     * 设置suggest  搜词记忆
      *
      * @param indexTemplate
      * @return
