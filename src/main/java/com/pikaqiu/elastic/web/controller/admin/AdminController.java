@@ -249,13 +249,13 @@ public class AdminController {
     @ResponseBody
     public String testAsync(){
         Future<String> stringFuture = userService.testAsync();
-        try {
+        /*try {
             System.out.println(stringFuture.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
         return "1111";
     }
 }

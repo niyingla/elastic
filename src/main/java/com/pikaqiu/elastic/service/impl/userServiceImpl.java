@@ -74,7 +74,7 @@ public class userServiceImpl implements IUserService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return new AsyncResult<String>("hello world !!!!");
+        return new AsyncResult<>("hello world !!!!");
     }
 
 }
